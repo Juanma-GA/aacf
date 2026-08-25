@@ -1,0 +1,62 @@
+---
+description: .NET coding standards
+globs: "**/*.{cs,csproj}"
+alwaysApply: false
+---
+
+<!-- ═══ COMPROBACIÓN DE VERSIÓN DE AACF — LOS AGENTES DEBEN LEER ESTO PRIMERO ═══
+Este fichero pertenece a una instantánea descargada del ATEXIS AI Framework, versión 2.0.0.
+Antes de confiar en él, verifica que la instantánea está actualizada:
+1. Llama a la herramienta MCP aacf_fetch (endpoint http://10.117.139.1:8200/mcp, streamable-http,
+   cabecera 'Authorization: Bearer <key>' o 'X-Api-Key: <key>'):
+   aacf_fetch({"path": "VERSION"})
+2. Si la versión devuelta difiere de 2.0.0, esta instantánea está DESACTUALIZADA. Descarga TODOS
+   los ficheros del framework de nuevo vía aacf_fetch (empieza con aacf_fetch({"path": "", "list_dir": true})
+   y recorre el árbol), o pide al usuario que vuelva a descargar el ZIP del framework desde el portal
+   IdAI (/propose/framework). No mezcles ficheros de distintas versiones.
+3. Si NO PUEDES acceder al MCP aacf_fetch, DEBES decírselo al usuario: no puedes acceder al
+   MCP de AACF y podrías estar trabajando con una versión desactualizada del framework. Luego continúa
+   con este fichero tal cual.
+Verifica una vez por sesión, no por fichero.
+═══ -->
+
+
+# Reglas de .NET
+
+## General
+- .NET 8+ / C# 12+
+- Tipos de referencia nulables habilitados
+- Usa `async`/`await` para toda la E/S
+- Sigue las convenciones de nomenclatura de Microsoft (métodos en PascalCase, variables locales en
+  camelCase)
+
+## Arquitectura
+- Clean Architecture o Vertical Slices
+- Inyección de dependencias vía el contenedor de DI integrado
+- Patrón repositorio para el acceso a datos
+- MediatR para CQRS si aplica
+
+## ASP.NET Core
+- APIs mínimas o Controladores (preferencia del proyecto)
+- FluentValidation para la validación de solicitudes
+- Configuración fuertemente tipada (`IOptions<T>`)
+- Registro estructurado con Serilog
+
+## Entity Framework Core
+- Migraciones code-first
+- Sin SQL crudo en los controladores
+- `AsNoTracking` para consultas de solo lectura
+- Includes explícitos (sin carga perezosa)
+
+## Seguridad
+- Autenticación vía Keycloak OIDC (JwtBearer)
+- Políticas de autorización (no comprobaciones de rol en los controladores)
+- Tokens anti-falsificación para el envío de formularios
+- Endpoint de comprobaciones de salud expuesto
+
+## Pruebas
+- xUnit como framework de pruebas
+- FluentAssertions para las aserciones
+- Moq o NSubstitute para mocking
+- Pruebas de integración con `WebApplicationFactory`
+</content>

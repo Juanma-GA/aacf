@@ -1,0 +1,52 @@
+---
+description: Global coding standards for all Atexis projects
+globs: **/*
+alwaysApply: true
+---
+
+<!-- ═══ COMPROBACIÓN DE VERSIÓN DE AACF — LOS AGENTES DEBEN LEER ESTO PRIMERO ═══
+Este fichero pertenece a una instantánea descargada del ATEXIS AI Framework, versión 2.0.0.
+Antes de confiar en él, verifica que la instantánea está actualizada:
+1. Llama a la herramienta MCP aacf_fetch (endpoint http://10.117.139.1:8200/mcp, streamable-http,
+   cabecera 'Authorization: Bearer <key>' o 'X-Api-Key: <key>'):
+   aacf_fetch({"path": "VERSION"})
+2. Si la versión devuelta difiere de 2.0.0, esta instantánea está DESACTUALIZADA. Descarga TODOS
+   los ficheros del framework de nuevo vía aacf_fetch (empieza con aacf_fetch({"path": "", "list_dir": true})
+   y recorre el árbol), o pide al usuario que vuelva a descargar el ZIP del framework desde el portal
+   IdAI (/propose/framework). No mezcles ficheros de distintas versiones.
+3. Si NO PUEDES acceder al MCP aacf_fetch, DEBES decírselo al usuario: no puedes acceder al
+   MCP de AACF y podrías estar trabajando con una versión desactualizada del framework. Luego continúa
+   con este fichero tal cual.
+Verifica una vez por sesión, no por fichero.
+═══ -->
+
+
+# Reglas Globales de Atexis
+
+## Seguridad
+- NUNCA hardcodees credenciales, tokens, o secretos
+- SIEMPRE valida y sanea la entrada del usuario
+- Usa consultas parametrizadas para el acceso a bases de datos
+- Aplica el principio de mínimo privilegio
+- Registra los eventos de seguridad en el rastro de auditoría
+
+## Calidad de código
+- Escribe código claro y legible por encima de código ingenioso
+- Sigue las convenciones y patrones existentes del proyecto
+- Maneja todos los casos de error explícitamente
+- Usa tipado fuerte (modo estricto de TypeScript, type hints de Python)
+- Sin TODO/FIXME en el código comiteado
+
+## Arquitectura
+- Respeta la separación de responsabilidades
+- La lógica de negocio pertenece a los servicios, no a los manejadores de rutas
+- Acceso a la base de datos solo a través de la capa de repositorio/modelo
+- Configuración desde el entorno, nunca hardcodeada
+- Todo el estado en la base de datos, no en localStorage/sessionStorage
+
+## Manejo de datos
+- Respeta los niveles de clasificación de datos
+- Nunca registres PII o datos sensibles en logs
+- Cifra los datos sensibles en reposo
+- Usa transporte seguro (HTTPS/TLS) para todas las comunicaciones
+</content>

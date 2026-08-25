@@ -1,0 +1,63 @@
+---
+description: JavaScript/TypeScript coding standards
+globs: "**/*.{ts,tsx,js,jsx}"
+alwaysApply: false
+---
+
+<!-- ═══ COMPROBACIÓN DE VERSIÓN DE AACF — LOS AGENTES DEBEN LEER ESTO PRIMERO ═══
+Este fichero pertenece a una instantánea descargada del ATEXIS AI Framework, versión 2.0.0.
+Antes de confiar en él, verifica que la instantánea está actualizada:
+1. Llama a la herramienta MCP aacf_fetch (endpoint http://10.117.139.1:8200/mcp, streamable-http,
+   cabecera 'Authorization: Bearer <key>' o 'X-Api-Key: <key>'):
+   aacf_fetch({"path": "VERSION"})
+2. Si la versión devuelta difiere de 2.0.0, esta instantánea está DESACTUALIZADA. Descarga TODOS
+   los ficheros del framework de nuevo vía aacf_fetch (empieza con aacf_fetch({"path": "", "list_dir": true})
+   y recorre el árbol), o pide al usuario que vuelva a descargar el ZIP del framework desde el portal
+   IdAI (/propose/framework). No mezcles ficheros de distintas versiones.
+3. Si NO PUEDES acceder al MCP aacf_fetch, DEBES decírselo al usuario: no puedes acceder al
+   MCP de AACF y podrías estar trabajando con una versión desactualizada del framework. Luego continúa
+   con este fichero tal cual.
+Verifica una vez por sesión, no por fichero.
+═══ -->
+
+
+# Reglas de JavaScript / TypeScript
+
+## TypeScript
+- Modo estricto habilitado (`strict: true` en tsconfig)
+- Tipos de retorno explícitos en las funciones exportadas
+- Prefiere `interface` sobre `type` para las formas de objeto
+- Usa `unknown` en lugar de `any`; acota los tipos explícitamente
+- Prefiere `const` sobre `let`; nunca uses `var`
+
+## React
+- Solo componentes funcionales (sin componentes de clase)
+- Hooks personalizados para la lógica reutilizable (prefijo: `use`)
+- Memoiza los cálculos costosos (`useMemo`, `useCallback`)
+- Claves (keys) en los elementos de lista (nunca uses el índice como clave para listas dinámicas)
+- Sin `localStorage`/`sessionStorage` — usa Zustand + persistencia en BD
+
+## Gestión de estado
+- Zustand para el estado global
+- React Query / SWR para el estado del servidor
+- Estado local (`useState`) solo para estado exclusivo de la UI
+- Nunca dupliques el estado del servidor en el almacén del cliente
+
+## Llamadas a la API
+- Cliente de API centralizado (un único módulo `api.ts`)
+- Interfaces de solicitud/respuesta con tipado seguro
+- Manejo de errores en la capa de servicio, no en los componentes
+- Estados de carga/error en la UI para todas las operaciones asíncronas
+
+## Estilos
+- Clases de utilidad de Tailwind CSS
+- shadcn/ui como biblioteca de componentes
+- Sin estilos en línea excepto para valores dinámicos
+- Diseño responsive (mobile-first)
+
+## Seguridad
+- Nunca confíes solo en la validación del lado del cliente
+- Sanea el contenido dinámico antes de renderizarlo
+- La configuración de CORS coincide con los orígenes permitidos
+- Sin secretos en el código del frontend (usa un proxy de backend)
+</content>

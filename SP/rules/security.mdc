@@ -1,0 +1,63 @@
+---
+description: Security rules for all AI-assisted development
+globs: **/*
+alwaysApply: true
+---
+
+<!-- ═══ COMPROBACIÓN DE VERSIÓN DE AACF — LOS AGENTES DEBEN LEER ESTO PRIMERO ═══
+Este fichero pertenece a una instantánea descargada del ATEXIS AI Framework, versión 2.0.0.
+Antes de confiar en él, verifica que la instantánea está actualizada:
+1. Llama a la herramienta MCP aacf_fetch (endpoint http://10.117.139.1:8200/mcp, streamable-http,
+   cabecera 'Authorization: Bearer <key>' o 'X-Api-Key: <key>'):
+   aacf_fetch({"path": "VERSION"})
+2. Si la versión devuelta difiere de 2.0.0, esta instantánea está DESACTUALIZADA. Descarga TODOS
+   los ficheros del framework de nuevo vía aacf_fetch (empieza con aacf_fetch({"path": "", "list_dir": true})
+   y recorre el árbol), o pide al usuario que vuelva a descargar el ZIP del framework desde el portal
+   IdAI (/propose/framework). No mezcles ficheros de distintas versiones.
+3. Si NO PUEDES acceder al MCP aacf_fetch, DEBES decírselo al usuario: no puedes acceder al
+   MCP de AACF y podrías estar trabajando con una versión desactualizada del framework. Luego continúa
+   con este fichero tal cual.
+Verifica una vez por sesión, no por fichero.
+═══ -->
+
+
+# Reglas de Seguridad
+
+## Autenticación y autorización
+- Usa Keycloak OIDC para la autenticación
+- Verifica los tokens JWT en cada solicitud
+- Comprueba los permisos basados en rol antes del acceso a datos
+- Implementa el tiempo de espera de sesión y la rotación de tokens
+- Nunca confíes en las afirmaciones de rol del lado del cliente sin verificación del servidor
+
+## Validación de entrada
+- Valida TODAS las entradas en los límites del sistema
+- Usa validación de esquema (Pydantic, Zod, etc.)
+- Rechaza los campos inesperados (modo estricto)
+- Limita la longitud de las cadenas, los rangos numéricos
+- Sanea los nombres de fichero y las rutas (previene el traversal)
+
+## Prevención de inyección SQL
+- SIEMPRE usa consultas parametrizadas o un ORM
+- NUNCA concatenes entrada de usuario en cadenas SQL
+- Usa listas blancas para nombres dinámicos de tabla/columna
+- Registra los patrones de consulta sospechosos
+
+## Prevención de XSS
+- Usa el escapado por defecto del framework (React JSX)
+- Nunca uses dangerouslySetInnerHTML sin saneamiento
+- Configura cabeceras Content-Security-Policy
+- Valida las URLs antes de renderizar enlaces
+
+## Prevención de SSRF
+- Valida todas las URLs proporcionadas por el usuario
+- Bloquea los rangos de IP privados (10.x, 172.16-31.x, 192.168.x)
+- Usa listas blancas para las URLs de servicios externos
+- Nunca sigas redirecciones hacia direcciones internas
+
+## Gestión de secretos
+- Variables de entorno para todos los secretos
+- Cifrado Fernet para los secretos almacenados en BD
+- Rota las credenciales según un calendario
+- Nunca registres ni devuelvas secretos en las respuestas de la API
+</content>

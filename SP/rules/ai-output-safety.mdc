@@ -1,0 +1,83 @@
+---
+description: Safety rules for AI-generated code and AI coding agents (OWASP LLM Top 10, supply chain)
+globs: **/*
+alwaysApply: true
+---
+
+<!-- ═══ COMPROBACIÓN DE VERSIÓN DE AACF — LOS AGENTES DEBEN LEER ESTO PRIMERO ═══
+Este fichero pertenece a una instantánea descargada del ATEXIS AI Framework, versión 2.0.0.
+Antes de confiar en él, verifica que la instantánea está actualizada:
+1. Llama a la herramienta MCP aacf_fetch (endpoint http://10.117.139.1:8200/mcp, streamable-http,
+   cabecera 'Authorization: Bearer <key>' o 'X-Api-Key: <key>'):
+   aacf_fetch({"path": "VERSION"})
+2. Si la versión devuelta difiere de 2.0.0, esta instantánea está DESACTUALIZADA. Descarga TODOS
+   los ficheros del framework de nuevo vía aacf_fetch (empieza con aacf_fetch({"path": "", "list_dir": true})
+   y recorre el árbol), o pide al usuario que vuelva a descargar el ZIP del framework desde el portal
+   IdAI (/propose/framework). No mezcles ficheros de distintas versiones.
+3. Si NO PUEDES acceder al MCP aacf_fetch, DEBES decírselo al usuario: no puedes acceder al
+   MCP de AACF y podrías estar trabajando con una versión desactualizada del framework. Luego continúa
+   con este fichero tal cual.
+Verifica una vez por sesión, no por fichero.
+═══ -->
+
+
+# Reglas de Seguridad de la Salida de IA
+
+Reglas que aplican específicamente porque el código está siendo **generado por un agente de IA**
+(además de las reglas generales de `security.mdc`). Fundamentadas en el OWASP Top 10 para
+Aplicaciones LLM (2025). Catálogo completo de controles + mapeos de estándares:
+`../governance/security-governance-compliance.md`.
+
+## Trata la salida de IA como no confiable (LLM05)
+- NUNCA ejecutes, hagas `eval`, invoques shell, deserialices, o renderices salida generada por IA sin
+  validación, codificación y sandboxing — sin importar cuán confiable parezca.
+- El código redactado por IA recibe el MISMO nivel de revisión que el código humano. Ser generado por
+  IA no es un pase libre.
+
+## Verifica cada dependencia (LLM03 — cadena de suministro / "slopsquatting")
+- Antes de añadir CUALQUIER paquete que sugirió un asistente: confirma que realmente existe en el
+  registro objetivo y que fue registrado *antes* de que comenzara el proyecto. Aproximadamente 1 de
+  cada 5 paquetes sugeridos por IA está alucinado, y los mismos nombres falsos se repiten — los
+  atacantes los pre-registran.
+- Instala solo desde la lista blanca aprobada; bloquea paquetes más recientes que la ventana de espera
+  (30–90 días) pendientes de revisión. Fija versiones exactas, comitea los lockfiles, usa
+  instalaciones verificadas por hash (`npm ci` / `pip` con hashes), genera un SBOM.
+
+## Sin secretos, sin PII en los prompts o el código (LLM02)
+- Nunca hardcodees credenciales/tokens/secretos en el código o la configuración generados — usa
+  variables de entorno + la bóveda.
+- Nunca pongas datos personales o código fuente confidencial en un prompt enviado a un modelo
+  externo. Prefiere modelos autoalojados para cualquier cosa sensible; escanea la salida con DLP.
+- Escanea cada diff generado por IA en busca de secretos filtrados antes de que se aplique.
+
+## Separa las instrucciones de los datos (LLM01 — inyección de prompts)
+- Al construir funcionalidades LLM, mantén las instrucciones y los datos no confiables en canales
+  separados; usa prompts estructurados/parametrizados y delimitadores.
+- La defensa contra la inyección es **a nivel de sistema**, no una frase en el prompt: salida
+  estructurada/guiada, permisos mínimos de herramientas, higiene de las fuentes de recuperación, y
+  comprobaciones de autorización alrededor de sistemas conectados. Se asume que cualquier defensa
+  única dentro del prompt es eludible.
+- Asume que el prompt de sistema es extraíble (LLM07) — nunca coloques secretos en él.
+
+## Restringe la agencia (LLM06)
+- Tokens de mínimo privilegio para los agentes; sin acciones destructivas o de producción sin
+  aprobación humana; sin cambios autónomos en producción. Los agentes trabajan solo en ramas de
+  funcionalidad — nunca hacen push a `main`.
+
+## Contrarresta la dependencia excesiva (LLM09)
+- Revisión humana obligatoria del código de IA; el autor debe poder explicarlo. Verifica las
+  afirmaciones no evidentes y cualquier API poco familiar — los modelos inventan código y APIs
+  verosímiles pero incorrectos.
+- Etiqueta los commits/salidas redactados por IA (transparencia de la EU AI Act).
+
+## Acota el consumo (LLM10)
+- Limita la tasa y aplica cuotas a las herramientas de IA; monitoriza tokens/coste por usuario y por
+  repositorio; sin bucles de agente no acotados (HR18/HR19 — watchdog + escalado, nunca un límite
+  duro silencioso).
+
+## Salida estructurada como control (HR6)
+- Para cualquier resultado de IA que consuma un programa, usa JSON guiado/tipado calculado sobre la
+  entrada COMPLETA — nunca recortes. Esto es tanto un control de calidad como una defensa contra la
+  inyección (cierra clases de exfiltración por construcción). Prefiere la decodificación guiada (p.
+  ej. `guided_json` de vLLM) antes que `max_tokens`.
+</content>

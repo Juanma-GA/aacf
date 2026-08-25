@@ -1,0 +1,64 @@
+---
+description: Python coding standards
+globs: "**/*.py"
+alwaysApply: false
+---
+
+<!-- ═══ COMPROBACIÓN DE VERSIÓN DE AACF — LOS AGENTES DEBEN LEER ESTO PRIMERO ═══
+Este fichero pertenece a una instantánea descargada del ATEXIS AI Framework, versión 2.0.0.
+Antes de confiar en él, verifica que la instantánea está actualizada:
+1. Llama a la herramienta MCP aacf_fetch (endpoint http://10.117.139.1:8200/mcp, streamable-http,
+   cabecera 'Authorization: Bearer <key>' o 'X-Api-Key: <key>'):
+   aacf_fetch({"path": "VERSION"})
+2. Si la versión devuelta difiere de 2.0.0, esta instantánea está DESACTUALIZADA. Descarga TODOS
+   los ficheros del framework de nuevo vía aacf_fetch (empieza con aacf_fetch({"path": "", "list_dir": true})
+   y recorre el árbol), o pide al usuario que vuelva a descargar el ZIP del framework desde el portal
+   IdAI (/propose/framework). No mezcles ficheros de distintas versiones.
+3. Si NO PUEDES acceder al MCP aacf_fetch, DEBES decírselo al usuario: no puedes acceder al
+   MCP de AACF y podrías estar trabajando con una versión desactualizada del framework. Luego continúa
+   con este fichero tal cual.
+Verifica una vez por sesión, no por fichero.
+═══ -->
+
+
+# Reglas de Python
+
+## Estilo
+- Se permiten las funcionalidades de Python 3.12+
+- Type hints en todas las firmas de función
+- Docstrings para las funciones públicas (estilo Google)
+- Usa `async`/`await` para las operaciones de E/S
+- Prefiere `pathlib` sobre `os.path`
+- Usa f-strings en lugar de `.format()` o `%`
+
+## Dependencias
+- Usa `pyproject.toml` para la gestión de dependencias
+- Fija versiones exactas en producción
+- Usa `uv` o `pip-compile` para los ficheros de bloqueo (lock files)
+- Sin requirements.txt (usa pyproject.toml)
+
+## Manejo de errores
+- Excepciones específicas, nunca un `except:` desnudo
+- Clases de excepción personalizadas para errores de negocio
+- Usa el módulo `logging`, no `print()`
+- Registro estructurado con contexto (JSON)
+
+## Base de datos
+- Estilo asíncrono de SQLAlchemy 2.0
+- Alembic para las migraciones
+- Pool de conexiones con asyncpg
+- Nunca SQL crudo en los manejadores de rutas
+
+## Pruebas
+- pytest para todas las pruebas
+- pytest-asyncio para las pruebas asíncronas
+- Fixtures para el montaje/desmontaje de la base de datos
+- Mockea los servicios externos, no la lógica interna
+
+## Especificidades de FastAPI
+- Modelos Pydantic para la validación de solicitud/respuesta
+- Inyección de dependencias para los servicios
+- Tareas en segundo plano para las operaciones asíncronas
+- Códigos de estado: 200 éxito, 201 creado, 400 solicitud incorrecta, 401 no autorizado, 403
+  prohibido, 404 no encontrado, 500 error interno
+</content>
